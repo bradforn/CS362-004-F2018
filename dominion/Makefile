@@ -37,3 +37,26 @@ all: playdom player
 
 clean:
 	rm -f *.o playdom.exe playdom player player.exe  *.gcov *.gcda *.gcno *.so *.out testDrawCard testDrawCard.exe
+
+
+
+
+unittestresults: unittest1.c unittest2.c dominion.c
+	gcc dominion.c -lm unittest1.c -o unittest1 rngs.o $(CFLAGS) -fprofile-generate
+	gcc dominion.c -lm unittest2.c -o unittest2 rngs.o $(CFLAGS) -fprofile-generate
+	gcc dominion.c -lm unittest3.c -o unittest3 rngs.o $(CFLAGS) -fprofile-generate
+	gcc dominion.c -lm unittest4.c -o unittest4 rngs.o $(CFLAGS) -fprofile-generate
+	#gcc dominion.c -lm cardtest1.c -o cardtest1 rngs.o $(CFLAGS) -fprofile-generate
+	#gcc dominion.c -lm cardtest2.c -o cardtest2 rngs.o $(CFLAGS) -fprofile-generate
+	#gcc dominion.c -lm cardtest3.c -o cardtest3 rngs.o $(CFLAGS) -fprofile-generate
+	#gcc dominion.c -lm cardtest4.c -o cardtest4 rngs.o $(CFLAGS) -fprofile-generate
+	./unittest1 &> unittestresults.out
+	./unittest2 >> unittestresults.out
+	./unittest3 >> unittestresults.out
+	./unittest4 >> unittestresults.out
+	#./cardtest1 >> unittestresults.out
+	#./cardtest2 >> unittestresults.out
+	#./cardtest3 >> unittestresults.out
+	#./cardtest4 >> unittestresults.out
+	gcov dominion.c >> unittestresults.out
+	cat dominion.c.gcov >> unittestresults.out 
