@@ -1,1 +1,4 @@
-Here, You should create a directory with your ONID similar to instructor's ONID.
+Name: Nicholas Bradford 
+ONID: Bradforn
+
+This is my Assignment 3 submission.

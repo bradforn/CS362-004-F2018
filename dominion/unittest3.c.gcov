@@ -1,0 +1,46 @@
+        -:    0:Source:unittest3.c
+        -:    0:Programs:1
+        -:    1:#include "dominion.h"
+        -:    2:#include <stdio.h>
+        -:    3:#include <assert.h>
+        -:    4:
+        -:    5:
+        -:    6:
+        -:    7:///////////////////////////////////////////////////
+        -:    8://Fancy Color code stuff
+        -:    9:#define RESET  "\x1B[0m"
+        -:   10:#define RED  "\x1B[31m"
+        -:   11:#define GRN  "\x1B[32m"
+        -:   12:#define YEL  "\x1B[33m"
+        -:   13:#define BLU  "\x1B[34m"
+        -:   14:#define MAG  "\x1B[35m"
+        -:   15:#define CYN  "\x1B[36m"
+        -:   16:#define WHT  "\x1B[37m"
+        -:   17://///////////////////////////////////////////////
+        -:   18:
+        -:   19:
+        -:   20:// test for the function isGameOver()
+        -:   21:
+        -:   22:
+        1:   23:int main() {
+        -:   24:      struct gameState Game;
+        1:   25:      struct gameState * t = &Game;
+        1:   26:      int k[10] = {smithy, adventurer, sea_hag, embargo, tribute, minion, ambassador, steward, embargo, baron};
+        -:   27:     
+        1:   28:      initializeGame(2, k, 5, &Game);
+        -:   29:     
+        1:   30:      int a = isGameOver(t);
+        -:   31:      
+        1:   32:      printf(YEL"=========================================\n");
+        1:   33:      if(a == 1){
+        1:   34:        printf(GRN "Unit Test 3 PASS \n" RESET" Function:" BLU " isGameOver()" RESET " works!\n");
+        -:   35:      }
+        -:   36:      else{
+    #####:   37:        printf(RED "Unit Test 3 FAIL \n" RESET" Function:" BLU " isGameOver()" RESET " has failed to check if the game is over!\n");
+        -:   38:      }
+        1:   39:      printf(YEL"=========================================\n");
+        -:   40:
+        -:   41:
+        -:   42:
+        -:   43:}
+        -:   44:

@@ -1,0 +1,46 @@
+        -:    0:Source:unittest2.c
+        -:    0:Programs:1
+        -:    1:#include "dominion.h"
+        -:    2:#include <stdio.h>
+        -:    3:#include <assert.h>
+        -:    4:
+        -:    5:
+        -:    6:
+        -:    7:///////////////////////////////////////////////////
+        -:    8://Fancy Color code stuff
+        -:    9:#define RESET  "\x1B[0m"
+        -:   10:#define RED  "\x1B[31m"
+        -:   11:#define GRN  "\x1B[32m"
+        -:   12:#define YEL  "\x1B[33m"
+        -:   13:#define BLU  "\x1B[34m"
+        -:   14:#define MAG  "\x1B[35m"
+        -:   15:#define CYN  "\x1B[36m"
+        -:   16:#define WHT  "\x1B[37m"
+        -:   17://///////////////////////////////////////////////
+        -:   18:
+        -:   19:
+        -:   20:// test for the function kingdomCards()
+        -:   21:
+        -:   22:
+        1:   23:int main() {
+        1:   24:      int k[10] = {1,2,3,4,5,6,7,8,9,10};
+        -:   25:
+        1:   26:      int* result = kingdomCards(k[0], k[1], k[2], k[3], k[4], k[5], k[6], k[7], k[8], k[9]);
+        1:   27:      int errorflag = 0;
+        1:   28:      int i = 0;
+        -:   29:
+        1:   30:      printf(YEL"=========================================\n");
+        -:   31:
+       12:   32:      while( i < 10 ){
+       10:   33:        if(result[i] != k[i]){
+    #####:   34:          errorflag = 1;
+    #####:   35:          printf(RED "Unit Test 2 FAIL \n" RESET" Function:" BLU " kingdomCards()" RESET " has failed to keep track of the array values for the cards!\n");
+        -:   36:        }
+       10:   37:        i = i + 1;
+        -:   38:      }
+        1:   39:      if(errorflag != 1){
+        1:   40:        printf(GRN "Unit Test 2 PASS \n" RESET" Function:" BLU " kingdomCards()" RESET " works!\n");
+        -:   41:      }
+        1:   42:      printf(YEL"=========================================\n");
+        -:   43:
+        -:   44:}
