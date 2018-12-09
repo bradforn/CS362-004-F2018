@@ -6412,7 +6412,7 @@ Finished random Test 1 for Smithy().
 
 
 File 'dominion.c'
-Lines executed:25.45% of 558
+Lines executed:42.11% of 558
 Creating 'dominion.c.gcov'
 
 randomtestcard2.c:
@@ -15608,7 +15608,7 @@ Finished random Test 2 for Embargo().
 
 
 File 'dominion.c'
-Lines executed:26.34% of 558
+Lines executed:42.11% of 558
 Creating 'dominion.c.gcov'
 
 randomtestadventurer.c:
@@ -25660,6 +25660,6 @@ Finished random Test 3 for Adventurer().
 
 
 File 'dominion.c'
-Lines executed:29.75% of 558
+Lines executed:42.11% of 558
 Creating 'dominion.c.gcov'
 

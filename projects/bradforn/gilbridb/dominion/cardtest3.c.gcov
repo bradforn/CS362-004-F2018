@@ -1,0 +1,426 @@
+        -:    0:Source:cardtest3.c
+        -:    0:Graph:cardtest3.gcno
+        -:    0:Data:cardtest3.gcda
+        -:    0:Runs:1
+        -:    0:Programs:1
+        -:    1:#include<stdio.h>
+        -:    2:#include<stdlib.h>
+        -:    3:#include <math.h>
+        -:    4:#include "dominion.h"
+        -:    5:#include "dominion_helpers.h"
+        -:    6:#include "rngs.h"
+        -:    7:
+        -:    8:
+        -:    9:
+        -:   10:/****************************************************************
+        -:   11://			cmpDeck()
+        -:   12://
+        -:   13:// Compare contents of the decks 1 and 2 against each other
+        -:   14://  returns a 2 if the decks are a perfect match
+        -:   15://  returns a 1 if the two decks have the same contents in different order
+        -:   16://  returns a 0 if the two decks do NOT have the same contents
+        -:   17://  returns a -1 if deck sizes are not equal.
+        -:   18:***************************************************************/
+function cmpDeck called 7 returned 100% blocks executed 52%
+        7:   19:int cmpDeck(int *deck1, int *deck2, int deck1size, int deck2size)
+        -:   20:{
+        7:   21:	if(deck1size != deck2size) {return -1;}
+branch  0 taken 14% (fallthrough)
+branch  1 taken 86%
+        -:   22:	//Copy decks to decks that can be altered
+        -:   23:	int deckP1[MAX_DECK];
+        -:   24:	int deckP2[MAX_DECK];
+        6:   25:	int deckPpos1 = 0;
+        6:   26:	int deckPpos2 = 0;
+        -:   27:	int i;
+        -:   28:	int j;
+        -:   29:
+        -:   30:	//Capture current decks in deck holders for all players
+       66:   31:	for(i = 0; i < deck1size; i++)
+branch  0 taken 91%
+branch  1 taken 9% (fallthrough)
+        -:   32:	{
+       60:   33:		deckP1[deckPpos1] = deck1[i];//current Player top card = current card of deck
+       60:   34:		deckP2[deckPpos2] = deck2[i];//current Player top card = current card of deck
+       60:   35:		deckPpos1++;//increase top of deck
+       60:   36:		deckPpos2++;//increase top of deck
+        -:   37:	}
+        -:   38:
+        -:   39:
+        -:   40:	//Check if perfect match
+       60:   41:	for(i = 0; i < deck1size; i++)
+branch  0 taken 100%
+branch  1 taken 0% (fallthrough)
+        -:   42:	{
+        -:   43:		//printf("FOR TESTING %d vs %d\n", deckP1[i], deckP2[i]);
+       60:   44:		if(deckP1[i] != deckP2[i])
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:   45:		{
+    #####:   46:			break; //Not perfect match
+        -:   47:		}
+       60:   48:		else if(i == (deck1size -1)) // if this is last iteration
+branch  0 taken 10% (fallthrough)
+branch  1 taken 90%
+        -:   49:		{
+        6:   50:			return 2; // Decks are a perfect match
+        -:   51:		}
+        -:   52:	}
+        -:   53:
+    #####:   54:	for(i =0; i < deck1size; i++)
+branch  0 never executed
+branch  1 never executed
+        -:   55:	{
+    #####:   56:		int conclusion = 0;
+    #####:   57:		for(j = 0; j < deck1size; j++)
+branch  0 never executed
+branch  1 never executed
+        -:   58:		{
+    #####:   59:			if(deckP1[i] == deckP2[j])
+branch  0 never executed
+branch  1 never executed
+        -:   60:			{
+    #####:   61:				deckP2[j] = -1; // Removes it as an option
+    #####:   62:				conclusion = 1;
+    #####:   63:				break;
+        -:   64:			}
+        -:   65:		}
+    #####:   66:		if(conclusion == 0){return 0;}// happens when inner if statement was not true
+branch  0 never executed
+branch  1 never executed
+        -:   67:	}
+    #####:   68:	return 1;
+        -:   69:}
+        -:   70:
+        -:   71:
+        -:   72:
+        -:   73:
+        -:   74:/******************************************************************
+        -:   75://			treasureMapTest()
+        -:   76://			
+        -:   77:// This function should test mutliple things regarding the Treasure Map card implementation:
+        -:   78://
+        -:   79:// Test that 4 Gold are placed on top of deck
+        -:   80:// Test that both treasure map cards are discarded AND trashed
+        -:   81:// Test return if only one treasure map is in hand
+        -:   82:// Test that the cards of other players are left unaffected 
+        -:   83:// Test that the number of total players is not changed
+        -:   84://
+        -:   85:// This should suffice to test a large part of the possible places for error.
+        -:   86:******************************************************************/
+        -:   87:
+function testtreasureMap called 4 returned 100% blocks executed 74%
+        4:   88:void testtreasureMap(int num_players, int hand_size_in, int num_t, int t1_pos, int t2_pos, int exp_return)
+        -:   89:{
+        4:   90:	printf("Tests for: %d players, %d hand size, %d number of treasure map cards, %d %d Treasure map card positions, %d expected return\n", num_players, hand_size_in, num_t, t1_pos, t2_pos, exp_return);
+call    0 returned 100%
+        -:   91:	int i;
+        -:   92:	int j;
+        -:   93:	int holder;
+        4:   94:	int player_holder = 0;	
+        4:   95:	int bonus[2] = {0,0}; // *bonus satisfier
+        -:   96:
+        -:   97:	struct gameState G;
+        4:   98:	struct gameState * state = &G;
+        4:   99:  	int k[10] = {adventurer, gardens, embargo, village, minion, mine, cutpurse,
+        -:  100:           great_hall, treasure_map, smithy};
+        4:  101:	initializeGame(num_players, k, 10, &G); //number players, cards, randomSeed, gameState
+call    0 returned 100%
+        -:  102:
+        -:  103:	//Holder number of players before card call
+        4:  104:	player_holder = state->numPlayers;
+        -:  105:
+        4:  106:	int not_treasure_map = k[0];
+        4:  107:	if(k[0] == treasure_map){not_treasure_map = k[1];}
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  108:
+        -:  109:
+        -:  110:	//Manually set hand for player
+        4:  111:	state->handCount[0] = 0;
+       29:  112:	for(i = 0; i < hand_size_in; i++)
+branch  0 taken 86%
+branch  1 taken 14% (fallthrough)
+        -:  113:	{
+       25:  114:		if(((i == t1_pos) && (num_t > 0)) || ((i == t2_pos) && (num_t > 1)))
+branch  0 taken 16% (fallthrough)
+branch  1 taken 84%
+branch  2 taken 0% (fallthrough)
+branch  3 taken 100%
+branch  4 taken 19% (fallthrough)
+branch  5 taken 81%
+branch  6 taken 75% (fallthrough)
+branch  7 taken 25%
+        -:  115:		{
+        7:  116:			state->hand[0][state->handCount[0]] = treasure_map;
+        7:  117:			state->handCount[0]++;
+        -:  118:		}
+        -:  119:		else
+        -:  120:		{
+       18:  121:			state->hand[0][state->handCount[0]] = not_treasure_map;
+       18:  122:			state->handCount[0]++;
+        -:  123:		}
+        -:  124:	}
+        -:  125:
+        -:  126:	
+        -:  127:	//Initialize Deck holders for all players
+        4:  128:	int deckP[num_players][MAX_DECK];
+        4:  129:	int deckPpos[num_players];
+        4:  130:	int handPCount[num_players];
+        4:  131:	int disPCount[num_players];
+        -:  132:	
+        -:  133:	//Capture current decks in deck holders for all players
+       17:  134:	for(j = 0; j < num_players; j++){	
+branch  0 taken 76%
+branch  1 taken 24% (fallthrough)
+       13:  135:		holder = state->deckCount[j];
+       13:  136:		handPCount[j] = state->handCount[j];
+       13:  137:		disPCount[j] = state->discardCount[j];
+      123:  138:		for(i = 0; i < holder; i++)
+branch  0 taken 89%
+branch  1 taken 11% (fallthrough)
+        -:  139:		{
+        -:  140:			//FOR TESTING printf("Deck %d card %d\n", j, state->deck[j][i]);
+      110:  141:			deckP[j][deckPpos[j]] = state->deck[j][i];//current Player top card = current card of deck
+      110:  142:			deckPpos[j]++;//increase top of deck
+        -:  143:		}
+        -:  144:	}//End for loop
+        -:  145:
+        -:  146:	//Shuffle Player 1 deck
+        4:  147:	holder = cardEffect(treasure_map, 0,0,0,&G,t1_pos, bonus);
+call    0 returned 100%
+        -:  148:	
+        -:  149:	//Checks Number of players remains unchanged
+        4:  150:	if(player_holder == state->numPlayers)
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+        4:  151:		printf("Treasure_Map(): PASS when test number of players.\n");
+call    0 returned 100%
+        -:  152:	else
+    #####:  153:		printf("Treasure_Map(): FAIL when test number of players.\n");
+call    0 never executed
+        -:  154:
+        -:  155:	//Checks Return Value is what was expected
+        4:  156:	if(holder == exp_return)
+branch  0 taken 75% (fallthrough)
+branch  1 taken 25%
+        3:  157:		printf("Treasure_Map(): PASS when test return value.\n");
+call    0 returned 100%
+        -:  158:	else
+        1:  159:		printf("Treasure_Map(): FAIL when test return value.\n");
+call    0 returned 100%
+        -:  160:
+        -:  161:	//SPLIT TESTS BASED ON RETURN VALUE
+        4:  162:	if(holder != -1)
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+        -:  163:	{
+        -:  164:		//Test 2 cards were discarded
+       19:  165:		for(i=0; i < state->handCount[0]; i++)
+branch  0 taken 84%
+branch  1 taken 16% (fallthrough)
+        -:  166:		{
+       16:  167:			if(state->hand[0][i] == treasure_map)
+branch  0 taken 6% (fallthrough)
+branch  1 taken 94%
+        -:  168:			{
+        1:  169:				printf("Treasure_Map(): FAIL when test treasure map cards still present in hand.\n");
+call    0 returned 100%
+        1:  170:				break;
+        -:  171:			}
+       15:  172:			else if(i == (state->handCount[0] - 1))//Check if last pass
+branch  0 taken 13% (fallthrough)
+branch  1 taken 87%
+        -:  173:			{
+        2:  174:				if(state->handCount[0] == (handPCount[0] - 2))
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+        2:  175:					printf("Treasure_Map(): PASS when test treasure maps discarded.\n");
+call    0 returned 100%
+        -:  176:				else
+    #####:  177:					printf("Treasure_Map(): FAIL when test hand size not what it should be after discard of 2 treasure maps.\n");
+call    0 never executed
+        -:  178:			}
+        -:  179:		}
+        -:  180:		//Test cards were trashed
+        4:  181:		for(i=0; i < state->discardCount[0]; i++)
+branch  0 taken 0%
+branch  1 taken 100% (fallthrough)
+        -:  182:		{
+    #####:  183:			if(state->discard[0][i] == treasure_map)
+branch  0 never executed
+branch  1 never executed
+        -:  184:			{
+    #####:  185:				printf("Treasure_Map(): FAIL when test treasure maps not trashed.\n");
+call    0 never executed
+    #####:  186:				break;
+        -:  187:			}
+    #####:  188:			else if(i == (state->discardCount[0] - 1))
+branch  0 never executed
+branch  1 never executed
+    #####:  189:				printf("Treasure_Map(): PASS when test treasure maps trashed.\n");
+call    0 never executed
+        -:  190:		}
+        -:  191:
+        -:  192:		//Test 4 Gold were added to top of deck
+        4:  193:		int gold_count = 0;
+       40:  194:		for(i=0; i < state->deckCount[0]; i++)
+branch  0 taken 90%
+branch  1 taken 10% (fallthrough)
+        -:  195:		{
+       36:  196:			if(state->deck[0][i] == gold)
+branch  0 taken 44% (fallthrough)
+branch  1 taken 56%
+        -:  197:			{
+       16:  198:				gold_count++;
+       16:  199:				if((gold_count == 4) && (i == 3))
+branch  0 taken 25% (fallthrough)
+branch  1 taken 75%
+branch  2 taken 0% (fallthrough)
+branch  3 taken 100%
+        -:  200:					{
+    #####:  201:					printf("Treasure_Map(): PASS when test 4 gold on top of deck.\n");
+call    0 never executed
+    #####:  202:					break;
+        -:  203:					}
+        -:  204:			}
+       20:  205:			else if(gold_count >= 4)
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  206:			{
+    #####:  207:				printf("Treasure_Map(): FAIL when test 4 gold in deck, not on top.\n");
+call    0 never executed
+    #####:  208:				break;
+        -:  209:			}
+       20:  210:			else if(i == (state->deckCount[0] - 1))//Check if last pass
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  211:			{
+    #####:  212:				printf("Treasure_Map(): FAIL when test 4 gold not in deck.\n");
+call    0 never executed
+        -:  213:			}
+        -:  214:		}
+        -:  215:
+        -:  216:	}
+        -:  217:	else
+        -:  218:	{
+    #####:  219:		if(state->handCount[0] == handPCount[0])
+branch  0 never executed
+branch  1 never executed
+    #####:  220:			printf("Treasure_Map(): PASS when test didn't change hand for -1 return.\n");
+call    0 never executed
+        -:  221:		else
+    #####:  222:		printf("Treasure_Map(): FAIL when test hand size changed for -1 return.\n");
+call    0 never executed
+        -:  223:	}
+        -:  224:
+        -:  225:	//Test state of other players
+        -:  226:	//Test Hand Count remains unchanged
+       13:  227:	for(i=1; i < num_players; i++)
+branch  0 taken 69%
+branch  1 taken 31% (fallthrough)
+        -:  228:	{
+        9:  229:		if(handPCount[i] != state->handCount[i])
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  230:		{
+    #####:  231:			printf("Treasure_Map(): FAIL when test hand Count changed for a different player.\n");
+call    0 never executed
+    #####:  232:			break;
+        -:  233:		}
+        9:  234:		if(i == (num_players - 1)) //Last Pass
+branch  0 taken 44% (fallthrough)
+branch  1 taken 56%
+        4:  235:			printf("Treasure_Map(): PASS when test hand Count didn't change for all other players.\n");
+call    0 returned 100%
+        -:  236:			
+        -:  237:			
+        -:  238:	}
+        -:  239:
+        -:  240:	
+        -:  241:
+        -:  242:
+        -:  243:
+        -:  244:
+        -:  245:
+        -:  246:	//Test Discard Count remains unchanged for other players
+       13:  247:	for(i=1; i < num_players; i++)
+branch  0 taken 69%
+branch  1 taken 31% (fallthrough)
+        -:  248:	{
+        9:  249:		if(disPCount[i] != state->discardCount[i])
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  250:		{
+    #####:  251:			printf("Treasure_Map(): FAIL when test discard Count changed for a different player.\n");
+call    0 never executed
+    #####:  252:			break;
+        -:  253:		}
+        9:  254:		if(i == (num_players - 1)) //Last Pass
+branch  0 taken 44% (fallthrough)
+branch  1 taken 56%
+        4:  255:			printf("Treasure_Map(): PASS when test discard Count didn't change for all other players.\n");
+call    0 returned 100%
+        -:  256:			
+        -:  257:			
+        -:  258:	}
+        -:  259:
+        -:  260:	//Test State of other player decks
+       10:  261:	for(i=1; i < num_players; i++)
+branch  0 taken 70%
+branch  1 taken 30% (fallthrough)
+        -:  262:	{		
+        7:  263:		player_holder = cmpDeck(deckP[i], state->deck[i], deckPpos[i], state->deckCount[i]);
+call    0 returned 100%
+        7:  264:			if(player_holder == -1)	
+branch  0 taken 14% (fallthrough)
+branch  1 taken 86%
+        -:  265:			{
+        1:  266:				printf("Treasure_Map(): FAIL when testing deck Count changed for a different player\n");
+call    0 returned 100%
+        1:  267:				break;
+        -:  268:			}
+        6:  269:			if(player_holder == 0)	
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  270:			{
+    #####:  271:				printf("Treasure_Map(): FAIL when testing deck contents changed for a different player.\n");
+call    0 never executed
+    #####:  272:				break;
+        -:  273:			}
+        6:  274:			if(player_holder == 1)	
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  275:			{
+    #####:  276:				printf("Treasure_Map(): FAIL when testing deck order changed for a different player.\n");
+call    0 never executed
+    #####:  277:				break;
+        -:  278:			}
+        6:  279:			if((player_holder == 2) && (i == (num_players - 1)))
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+branch  2 taken 50% (fallthrough)
+branch  3 taken 50%
+        3:  280:				printf("Treasure_Map(): PASS when testing decks were not altered for all other players.\n");
+call    0 returned 100%
+        -:  281:	}
+        -:  282:			
+        4:  283:}
+        -:  284:
+function main called 1 returned 100% blocks executed 100%
+        1:  285:int main(int argc, char *argv[])
+        -:  286:{
+        -:  287:	//void testtreasureMap(int num_players, int hand_size_in, int num_t, int t1_pos, int t2_pos, int exp_return)
+        1:  288:    testtreasureMap(3, 5, 2, 0, 1, 1); //Normal Operation
+call    0 returned 100%
+        1:  289:    testtreasureMap(4, 8, 2, 7, 0, 1); //Bookend map placement
+call    0 returned 100%
+        1:  290:    testtreasureMap(4, 2, 2, 1, 0, 1); //Hand Only Maps
+call    0 returned 100%
+        1:  291:    testtreasureMap(2, 10, 1, 5, 7, -1); //Only one map
+call    0 returned 100%
+        1:  292:    return 0;
+        -:  293:}
+        -:  294:
+        -:  295:
+        -:  296:

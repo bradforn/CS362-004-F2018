@@ -1,0 +1,411 @@
+        -:    0:Source:cardtest2.c
+        -:    0:Graph:cardtest2.gcno
+        -:    0:Data:cardtest2.gcda
+        -:    0:Runs:1
+        -:    0:Programs:1
+        -:    1:#include<stdio.h>
+        -:    2:#include<stdlib.h>
+        -:    3:#include <math.h>
+        -:    4:#include "dominion.h"
+        -:    5:#include "dominion_helpers.h"
+        -:    6:#include "rngs.h"
+        -:    7:
+        -:    8:
+        -:    9:
+        -:   10:/****************************************************************
+        -:   11://			cmpDeck()
+        -:   12://
+        -:   13:// Compare contents of the decks 1 and 2 against each other
+        -:   14://  returns a 2 if the decks are a perfect match
+        -:   15://  returns a 1 if the two decks have the same contents in different order
+        -:   16://  returns a 0 if the two decks do NOT have the same contents
+        -:   17://  returns a -1 if deck sizes are not equal.
+        -:   18:***************************************************************/
+function cmpDeck called 7 returned 100% blocks executed 52%
+        7:   19:int cmpDeck(int *deck1, int *deck2, int deck1size, int deck2size)
+        -:   20:{
+        7:   21:	if(deck1size != deck2size) {return -1;}
+branch  0 taken 14% (fallthrough)
+branch  1 taken 86%
+        -:   22:	//Copy decks to decks that can be altered
+        -:   23:	int deckP1[MAX_DECK];
+        -:   24:	int deckP2[MAX_DECK];
+        6:   25:	int deckPpos1 = 0;
+        6:   26:	int deckPpos2 = 0;
+        -:   27:	int i;
+        -:   28:	int j;
+        -:   29:
+        -:   30:	//Capture current decks in deck holders for all players
+       66:   31:	for(i = 0; i < deck1size; i++)
+branch  0 taken 91%
+branch  1 taken 9% (fallthrough)
+        -:   32:	{
+       60:   33:		deckP1[deckPpos1] = deck1[i];//current Player top card = current card of deck
+       60:   34:		deckP2[deckPpos2] = deck2[i];//current Player top card = current card of deck
+       60:   35:		deckPpos1++;//increase top of deck
+       60:   36:		deckPpos2++;//increase top of deck
+        -:   37:	}
+        -:   38:
+        -:   39:
+        -:   40:	//Check if perfect match
+       60:   41:	for(i = 0; i < deck1size; i++)
+branch  0 taken 100%
+branch  1 taken 0% (fallthrough)
+        -:   42:	{
+        -:   43:		//printf("FOR TESTING %d vs %d\n", deckP1[i], deckP2[i]);
+       60:   44:		if(deckP1[i] != deckP2[i])
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:   45:		{
+    #####:   46:			break; //Not perfect match
+        -:   47:		}
+       60:   48:		else if(i == (deck1size -1)) // if this is last iteration
+branch  0 taken 10% (fallthrough)
+branch  1 taken 90%
+        -:   49:		{
+        6:   50:			return 2; // Decks are a perfect match
+        -:   51:		}
+        -:   52:	}
+        -:   53:
+    #####:   54:	for(i =0; i < deck1size; i++)
+branch  0 never executed
+branch  1 never executed
+        -:   55:	{
+    #####:   56:		int conclusion = 0;
+    #####:   57:		for(j = 0; j < deck1size; j++)
+branch  0 never executed
+branch  1 never executed
+        -:   58:		{
+    #####:   59:			if(deckP1[i] == deckP2[j])
+branch  0 never executed
+branch  1 never executed
+        -:   60:			{
+    #####:   61:				deckP2[j] = -1; // Removes it as an option
+    #####:   62:				conclusion = 1;
+    #####:   63:				break;
+        -:   64:			}
+        -:   65:		}
+    #####:   66:		if(conclusion == 0){return 0;}// happens when inner if statement was not true
+branch  0 never executed
+branch  1 never executed
+        -:   67:	}
+    #####:   68:	return 1;
+        -:   69:}
+        -:   70:
+        -:   71:
+        -:   72:
+        -:   73:
+        -:   74:/******************************************************************
+        -:   75://			embargoTest()
+        -:   76://			
+        -:   77:// This function should test mutliple things regarding the Embargo card implementation:
+        -:   78://
+        -:   79:// Test that coins = coins +2 for p1
+        -:   80:// Test that the cards of other players are left unaffected 
+        -:   81:// Test that the number of total players is not changed
+        -:   82:// Test that card is discarded AND trashed
+        -:   83:// Test that embargo token was added to chosen pile, not others
+        -:   84:// Test that choosing a supply count at -1 returns -1
+        -:   85://
+        -:   86:// This should suffice to test a large part of the possible places for error.
+        -:   87:******************************************************************/
+        -:   88:
+function testembargo called 4 returned 100% blocks executed 69%
+        4:   89:void testembargo(int num_players, int hand_size_in, int embargo_pos, int choice1, int exp_return)
+        -:   90:{
+        4:   91:	printf("Tests for: %d players, %d hand size, %d embargo card position, %d choice1, expected return: %d\n", num_players, hand_size_in, embargo_pos, choice1, exp_return);
+call    0 returned 100%
+        -:   92:	int i;
+        -:   93:	int j;
+        -:   94:	int holder;
+        4:   95:	int player_holder = 0;	
+        4:   96:	int bonus[2] = {0,0}; // *bonus satisfier
+        -:   97:
+        -:   98:	struct gameState G;
+        4:   99:	struct gameState * state = &G;
+        4:  100:  	int k[10] = {adventurer, gardens, embargo, village, minion, mine, cutpurse,
+        -:  101:           great_hall, tribute, smithy};
+        4:  102:	initializeGame(num_players, k, 10, &G); //number players, cards, randomSeed, gameState
+call    0 returned 100%
+        -:  103:
+        -:  104:	//Holder number of players before card call
+        4:  105:	player_holder = state->numPlayers;
+        -:  106:
+        -:  107:	//Set suppy Count 3 to -1 for -1 test
+        4:  108:	state->supplyCount[3] = -1;
+        -:  109:
+        4:  110:	int not_embargo = k[0];
+        4:  111:	if(k[0] == embargo){not_embargo = k[1];}
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  112:
+        -:  113:	//Manually set hand for player
+        4:  114:	state->handCount[0] = 0;
+       30:  115:	for(i = 0; i < hand_size_in; i++)
+branch  0 taken 87%
+branch  1 taken 13% (fallthrough)
+        -:  116:	{
+       26:  117:		if(i == embargo_pos)
+branch  0 taken 15% (fallthrough)
+branch  1 taken 85%
+        -:  118:		{
+        4:  119:			state->hand[0][state->handCount[0]] = embargo;
+        4:  120:			state->handCount[0]++;
+        -:  121:		}
+        -:  122:		else
+        -:  123:		{
+       22:  124:			state->hand[0][state->handCount[0]] = not_embargo;
+       22:  125:			state->handCount[0]++;
+        -:  126:		}
+        -:  127:	}
+        -:  128:
+        -:  129:	
+        -:  130:	//Initialize Deck holders for all players
+        4:  131:	int deckP[num_players][MAX_DECK];
+        4:  132:	int deckPpos[num_players];
+        4:  133:	int handPCount[num_players];
+        4:  134:	int disPCount[num_players];
+        -:  135:	
+        -:  136:	//Capture current decks in deck holders for all players
+       17:  137:	for(j = 0; j < num_players; j++){	
+branch  0 taken 76%
+branch  1 taken 24% (fallthrough)
+       13:  138:		holder = state->deckCount[j];
+       13:  139:		handPCount[j] = state->handCount[j];
+       13:  140:		disPCount[j] = state->discardCount[j];
+      123:  141:		for(i = 0; i < holder; i++)
+branch  0 taken 89%
+branch  1 taken 11% (fallthrough)
+        -:  142:		{
+        -:  143:			//FOR TESTING printf("Deck %d card %d\n", j, state->deck[j][i]);
+      110:  144:			deckP[j][deckPpos[j]] = state->deck[j][i];//current Player top card = current card of deck
+      110:  145:			deckPpos[j]++;//increase top of deck
+        -:  146:		}
+        -:  147:	}//End for loop
+        -:  148:
+        4:  149:	int coin_holder = state->coins;
+        4:  150:	int embargo_tester = state->embargoTokens[choice1];
+        -:  151:	
+        -:  152:	int embargo_holder[10];
+       44:  153:	for(i=0; i < 10; i++)
+branch  0 taken 91%
+branch  1 taken 9% (fallthrough)
+        -:  154:	{
+       40:  155:		embargo_holder[i] = state->embargoTokens[i];
+        -:  156:	}
+        -:  157:
+        -:  158:
+        -:  159:	//Shuffle Player 1 deck
+        4:  160:	holder = cardEffect(embargo, choice1,0,0,&G,embargo_pos, bonus);
+call    0 returned 100%
+        -:  161:	
+        -:  162:	//Checks Number of players remains unchanged
+        4:  163:	if(holder == exp_return)
+branch  0 taken 25% (fallthrough)
+branch  1 taken 75%
+        1:  164:		printf("Embargo(): PASS when test return value.\n");
+call    0 returned 100%
+        -:  165:	else
+        3:  166:		printf("Embargo(): FAIL when test return value.\n");
+call    0 returned 100%
+        -:  167:	
+        -:  168:	//Checks Number of players remains unchanged
+        4:  169:	if(player_holder == state->numPlayers)
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+        4:  170:		printf("Embargo(): PASS when test number of players.\n");
+call    0 returned 100%
+        -:  171:	else
+    #####:  172:		printf("Embargo(): FAIL when test number of players.\n");
+call    0 never executed
+        -:  173:
+        -:  174:	//Checks coins + 2
+        4:  175:	if(state->coins == (coin_holder + 2))
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+        4:  176:		printf("Embargo(): PASS when test coins + 2.\n");
+call    0 returned 100%
+        -:  177:	else
+    #####:  178:		printf("Embargo(): FAIL when test coins + 2.\n");
+call    0 never executed
+        -:  179:	
+        -:  180:	//Checks Embargo token added
+        4:  181:	if(state->embargoTokens[choice1] == (embargo_tester + 1))
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  182:		{
+    #####:  183:			for(i=0; i<10; i++)
+branch  0 never executed
+branch  1 never executed
+        -:  184:			{
+    #####:  185:				if((i != choice1) && (embargo_holder[i] != state->embargoTokens[i]))
+branch  0 never executed
+branch  1 never executed
+branch  2 never executed
+branch  3 never executed
+        -:  186:				{
+    #####:  187:					printf("Embargo(): FAIL when test embargo tokens were changed on piles other than choice1.\n");
+call    0 never executed
+    #####:  188:					break;
+        -:  189:				}
+    #####:  190:				else if( i == 9) // check for last pass
+branch  0 never executed
+branch  1 never executed
+    #####:  191:					printf("Embargo(): PASS when test embargo token was added to pile choice1 only.\n");
+call    0 never executed
+        -:  192:
+        -:  193:			}
+        -:  194:
+        -:  195:		}
+        -:  196:	else
+        4:  197:		printf("Embargo(): FAIL when test embargo token was not added to pile choice1.\n");
+call    0 returned 100%
+        -:  198:
+        -:  199:	//Test Embargo discarded
+       19:  200:	for(i=0; i < state->handCount[0]; i++) // Deck was set up to only have one smithy card in hand, test to see that card no longer is inside the hand
+branch  0 taken 100%
+branch  1 taken 0% (fallthrough)
+        -:  201:	{
+       19:  202:		if(state->hand[0][i] == embargo)
+branch  0 taken 21% (fallthrough)
+branch  1 taken 79%
+        -:  203:		{
+        4:  204:			printf("Embargo(): FAIL when test Embargo card was not discarded.\n");
+call    0 returned 100%
+        4:  205:			break;
+        -:  206:		}
+       15:  207:		else if(i == (state->handCount[0] - 1))//check for last pass
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+    #####:  208:			printf("Embargo(): PASS when test Embargo card was discarded.\n");
+call    0 never executed
+        -:  209:	}
+        -:  210:
+        -:  211:
+        -:  212:	//Test Embargo trash
+        4:  213:	for(i=0; i < state->discardCount[0]; i++) // Deck was set up to only have one smithy card in hand, test to see that card no longer is inside the hand
+branch  0 taken 0%
+branch  1 taken 100% (fallthrough)
+        -:  214:	{
+    #####:  215:		if(state->discard[0][i] == embargo)
+branch  0 never executed
+branch  1 never executed
+        -:  216:		{
+    #####:  217:			printf("Embargo(): FAIL when test Embargo card was not trashed.\n");
+call    0 never executed
+    #####:  218:			break;
+        -:  219:		}
+    #####:  220:		else if(i == (state->discardCount[0] - 1))//check for last pass
+branch  0 never executed
+branch  1 never executed
+    #####:  221:			printf("Embargo(): PASS when test Embargo card was trashed (Not in discard).\n");
+call    0 never executed
+        -:  222:	}
+        -:  223:
+        -:  224:
+        -:  225:
+        -:  226:	//Test state of other players
+        -:  227:	//Test Hand Count remains unchanged
+       13:  228:	for(i=1; i < num_players; i++)
+branch  0 taken 69%
+branch  1 taken 31% (fallthrough)
+        -:  229:	{
+        9:  230:		if(handPCount[i] != state->handCount[i])
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  231:		{
+    #####:  232:			printf("Embargo(): FAIL when test hand Count changed for a different player.\n");
+call    0 never executed
+    #####:  233:			break;
+        -:  234:		}
+        9:  235:		if(i == (num_players - 1)) //Last Pass
+branch  0 taken 44% (fallthrough)
+branch  1 taken 56%
+        4:  236:			printf("Embargo(): PASS when test hand Count didn't change for all other players.\n");
+call    0 returned 100%
+        -:  237:			
+        -:  238:			
+        -:  239:	}
+        -:  240:
+        -:  241:	//Test Discard Count remains unchanged
+       17:  242:	for(i=0; i < num_players; i++)
+branch  0 taken 76%
+branch  1 taken 24% (fallthrough)
+        -:  243:	{
+       13:  244:		if(disPCount[i] != state->discardCount[i])
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  245:		{
+    #####:  246:			printf("Embargo(): FAIL when test discard Count changed for a player.\n");
+call    0 never executed
+    #####:  247:			break;
+        -:  248:		}
+       13:  249:		if(i == (num_players - 1)) //Last Pass
+branch  0 taken 31% (fallthrough)
+branch  1 taken 69%
+        4:  250:			printf("Embargo(): PASS when test discard Count didn't change for all players.\n");
+call    0 returned 100%
+        -:  251:			
+        -:  252:			
+        -:  253:	}
+        -:  254:
+        -:  255:
+        -:  256:	//Test State of other player decks
+       10:  257:	for(i=1; i < num_players; i++)
+branch  0 taken 70%
+branch  1 taken 30% (fallthrough)
+        -:  258:	{		
+        7:  259:		player_holder = cmpDeck(deckP[i], state->deck[i], deckPpos[i], state->deckCount[i]);
+call    0 returned 100%
+        7:  260:			if(player_holder == -1)	
+branch  0 taken 14% (fallthrough)
+branch  1 taken 86%
+        -:  261:			{
+        1:  262:				printf("Embargo(): FAIL when testing deck Count changed for a different player\n");
+call    0 returned 100%
+        1:  263:				break;
+        -:  264:			}
+        6:  265:			if(player_holder == 0)	
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  266:			{
+    #####:  267:				printf("Embargo(): FAIL when testing deck contents changed for a different player.\n");
+call    0 never executed
+    #####:  268:				break;
+        -:  269:			}
+        6:  270:			if(player_holder == 1)	
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  271:			{
+    #####:  272:				printf("Embargo(): FAIL when testing deck order changed for a different player.\n");
+call    0 never executed
+    #####:  273:				break;
+        -:  274:			}
+        6:  275:			if((player_holder == 2) && (i == (num_players - 1)))
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+branch  2 taken 50% (fallthrough)
+branch  3 taken 50%
+        3:  276:				printf("Embargo(): PASS when testing decks were not altered for all other players.\n");
+call    0 returned 100%
+        -:  277:	}
+        -:  278:			
+        4:  279:}
+        -:  280:
+function main called 1 returned 100% blocks executed 100%
+        1:  281:int main(int argc, char *argv[])
+        -:  282:{
+        1:  283:    testembargo(3, 5, 0, 1, 0);//Normal function
+call    0 returned 100%
+        1:  284:    testembargo(4, 8, 6, 7, 0);//Normal function with different player size, hand size, slot choice, pile selection, etc.
+call    0 returned 100%
+        1:  285:    testembargo(2, 9, 8, 3, -1); //Supply Count set to -1 at 3 for testing the -1 return
+call    0 returned 100%
+        1:  286:    testembargo(4, 4, 1, 11, 0); // Outside pile boundary call
+call    0 returned 100%
+        -:  287:
+        1:  288:    return 0;
+        -:  289:}
+        -:  290:
+        -:  291:
+        -:  292:

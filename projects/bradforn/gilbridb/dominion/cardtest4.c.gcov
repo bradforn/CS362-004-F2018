@@ -1,0 +1,496 @@
+        -:    0:Source:cardtest4.c
+        -:    0:Graph:cardtest4.gcno
+        -:    0:Data:cardtest4.gcda
+        -:    0:Runs:1
+        -:    0:Programs:1
+        -:    1:#include<stdio.h>
+        -:    2:#include<stdlib.h>
+        -:    3:#include <math.h>
+        -:    4:#include "dominion.h"
+        -:    5:#include "dominion_helpers.h"
+        -:    6:#include "rngs.h"
+        -:    7:
+        -:    8:
+        -:    9:
+        -:   10:/****************************************************************
+        -:   11://			cmpDeck()
+        -:   12://
+        -:   13:// Compare contents of the decks 1 and 2 against each other
+        -:   14://  returns a 2 if the decks are a perfect match
+        -:   15://  returns a 1 if the two decks have the same contents in different order
+        -:   16://  returns a 0 if the two decks do NOT have the same contents
+        -:   17://  returns a -1 if deck sizes are not equal.
+        -:   18:***************************************************************/
+function cmpDeck called 7 returned 100% blocks executed 52%
+        7:   19:int cmpDeck(int *deck1, int *deck2, int deck1size, int deck2size)
+        -:   20:{
+        7:   21:	if(deck1size != deck2size) {return -1;}
+branch  0 taken 14% (fallthrough)
+branch  1 taken 86%
+        -:   22:	//Copy decks to decks that can be altered
+        -:   23:	int deckP1[MAX_DECK];
+        -:   24:	int deckP2[MAX_DECK];
+        6:   25:	int deckPpos1 = 0;
+        6:   26:	int deckPpos2 = 0;
+        -:   27:	int i;
+        -:   28:	int j;
+        -:   29:
+        -:   30:	//Capture current decks in deck holders for all players
+       66:   31:	for(i = 0; i < deck1size; i++)
+branch  0 taken 91%
+branch  1 taken 9% (fallthrough)
+        -:   32:	{
+       60:   33:		deckP1[deckPpos1] = deck1[i];//current Player top card = current card of deck
+       60:   34:		deckP2[deckPpos2] = deck2[i];//current Player top card = current card of deck
+       60:   35:		deckPpos1++;//increase top of deck
+       60:   36:		deckPpos2++;//increase top of deck
+        -:   37:	}
+        -:   38:
+        -:   39:
+        -:   40:	//Check if perfect match
+       60:   41:	for(i = 0; i < deck1size; i++)
+branch  0 taken 100%
+branch  1 taken 0% (fallthrough)
+        -:   42:	{
+        -:   43:		//printf("FOR TESTING %d vs %d\n", deckP1[i], deckP2[i]);
+       60:   44:		if(deckP1[i] != deckP2[i])
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:   45:		{
+    #####:   46:			break; //Not perfect match
+        -:   47:		}
+       60:   48:		else if(i == (deck1size -1)) // if this is last iteration
+branch  0 taken 10% (fallthrough)
+branch  1 taken 90%
+        -:   49:		{
+        6:   50:			return 2; // Decks are a perfect match
+        -:   51:		}
+        -:   52:	}
+        -:   53:
+    #####:   54:	for(i =0; i < deck1size; i++)
+branch  0 never executed
+branch  1 never executed
+        -:   55:	{
+    #####:   56:		int conclusion = 0;
+    #####:   57:		for(j = 0; j < deck1size; j++)
+branch  0 never executed
+branch  1 never executed
+        -:   58:		{
+    #####:   59:			if(deckP1[i] == deckP2[j])
+branch  0 never executed
+branch  1 never executed
+        -:   60:			{
+    #####:   61:				deckP2[j] = -1; // Removes it as an option
+    #####:   62:				conclusion = 1;
+    #####:   63:				break;
+        -:   64:			}
+        -:   65:		}
+    #####:   66:		if(conclusion == 0){return 0;}// happens when inner if statement was not true
+branch  0 never executed
+branch  1 never executed
+        -:   67:	}
+    #####:   68:	return 1;
+        -:   69:}
+        -:   70:
+        -:   71:
+        -:   72:
+        -:   73:
+        -:   74:/******************************************************************
+        -:   75://			adventurerTest()
+        -:   76://			
+        -:   77:// This function should test mutliple things regarding the Adventurer card implementation:
+        -:   78://
+        -:   79:// Test that adventurer card is discarded
+        -:   80:// Test different types of treasures(copper, silver, gold)
+        -:   81:// Test different locations for two treasures (discard and deck piles)
+        -:   82:// Test that both cards are added to hand and removed from deck/discard
+        -:   83:// Test that the cards of other players are left unaffected 
+        -:   84:// Test that the number of total players is not changed
+        -:   85://
+        -:   86:// This should suffice to test a large part of the possible places for error.
+        -:   87:******************************************************************/
+        -:   88:
+function testadventurer called 4 returned 100% blocks executed 86%
+        4:   89:void testadventurer(int num_players, int hand_size_in, int adventurer_pos, int deck_size_in, int discard_size_in, int loc1, int loc2, int type1, int type2, int pos1, int pos2)
+        -:   90:{
+        4:   91:	printf("Tests for: %d players, %d hand size, %d adventurer card position, %d deck size, %d discard size\nTREASURE 1: %d type(4 = copper, 5 = silver, 6 = gold), %d location(0 = deck, 1 = discard), %d position in the pile (0 is top)\nTREASURE 2: %d type, %d location, %d position\n", num_players, hand_size_in, adventurer_pos, deck_size_in, discard_size_in, type1, loc1, pos1, type2, loc2, pos2);
+call    0 returned 100%
+        -:   92:	int i;
+        -:   93:	int j;
+        -:   94:	int holder;
+        4:   95:	int player_holder = 0;	
+        4:   96:	int bonus[2] = {0,0}; // *bonus satisfier
+        -:   97:
+        -:   98:	struct gameState G;
+        4:   99:	struct gameState * state = &G;
+        4:  100:  	int k[10] = {adventurer, gardens, embargo, village, minion, mine, cutpurse,
+        -:  101:           great_hall, tribute, smithy};
+        4:  102:	initializeGame(num_players, k, 10, &G); //number players, cards, randomSeed, gameState
+call    0 returned 100%
+        -:  103:
+        -:  104:	//Holder number of players before card call
+        4:  105:	player_holder = state->numPlayers;
+        -:  106:
+        4:  107:	int not_adventurer = k[1];
+        4:  108:	if(k[1] == adventurer){not_adventurer = k[2];}
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  109:
+        -:  110:
+        -:  111:	//Manually set hand, discard, and deck for player
+        4:  112:	state->handCount[0] = 0;
+       21:  113:	for(i = 0; i < hand_size_in; i++)
+branch  0 taken 81%
+branch  1 taken 19% (fallthrough)
+        -:  114:	{
+       17:  115:		if(i == adventurer_pos)
+branch  0 taken 24% (fallthrough)
+branch  1 taken 76%
+        -:  116:		{
+        4:  117:			state->hand[0][state->handCount[0]] = adventurer;
+        4:  118:			state->handCount[0]++;
+        -:  119:		}
+        -:  120:		else
+        -:  121:		{
+       13:  122:			state->hand[0][state->handCount[0]] = not_adventurer;
+       13:  123:			state->handCount[0]++;
+        -:  124:		}
+        -:  125:	}
+        -:  126:
+        4:  127:	state->deckCount[0] = 0;
+       42:  128:	for(i = 0; i < deck_size_in; i++)
+branch  0 taken 90%
+branch  1 taken 10% (fallthrough)
+        -:  129:	{
+       38:  130:		if((loc1 == 1) && (i == pos1))
+branch  0 taken 39% (fallthrough)
+branch  1 taken 61%
+branch  2 taken 7% (fallthrough)
+branch  3 taken 93%
+        -:  131:		{
+        1:  132:			state->deck[0][state->deckCount[0]] = type1;
+        1:  133:			state->deckCount[0]++;
+        -:  134:		}
+       38:  135:		if((loc2 == 1) && (i == pos2))
+branch  0 taken 95% (fallthrough)
+branch  1 taken 5%
+branch  2 taken 8% (fallthrough)
+branch  3 taken 92%
+        -:  136:		{
+        3:  137:			state->deck[0][state->deckCount[0]] = type2;
+        3:  138:			state->deckCount[0]++;
+        -:  139:		}
+        -:  140:		else
+        -:  141:		{
+       35:  142:			state->deck[0][state->deckCount[0]] = not_adventurer;
+       35:  143:			state->deckCount[0]++;
+        -:  144:		}
+        -:  145:	}
+        4:  146:	state->discardCount[0] = 0;
+       32:  147:	for(i = 0; i < discard_size_in; i++)
+branch  0 taken 88%
+branch  1 taken 13% (fallthrough)
+        -:  148:	{
+       28:  149:		if((loc1 == 0) && (i == pos1))
+branch  0 taken 93% (fallthrough)
+branch  1 taken 7%
+branch  2 taken 12% (fallthrough)
+branch  3 taken 88%
+        -:  150:		{
+        3:  151:			state->discard[0][state->discardCount[0]] = type1;
+        3:  152:			state->discardCount[0]++;
+        -:  153:		}
+       28:  154:		if((loc2 == 0) && (i == pos2))
+branch  0 taken 36% (fallthrough)
+branch  1 taken 64%
+branch  2 taken 10% (fallthrough)
+branch  3 taken 90%
+        -:  155:		{
+        1:  156:			state->discard[0][state->discardCount[0]] = type2;
+        1:  157:			state->discardCount[0]++;
+        -:  158:		}
+        -:  159:		else
+        -:  160:		{
+       27:  161:			state->discard[0][state->discardCount[0]] = not_adventurer;
+       27:  162:			state->discardCount[0]++;
+        -:  163:		}
+        -:  164:	}
+        -:  165:	
+        -:  166:	//Initialize Deck holders for all players
+        4:  167:	int deckP[num_players][MAX_DECK];
+        4:  168:	int deckPpos[num_players];
+        4:  169:	int handPCount[num_players];
+        4:  170:	int disPCount[num_players];
+        -:  171:	
+        -:  172:	//Capture current decks in deck holders for all players
+       16:  173:	for(j = 0; j < num_players; j++){	
+branch  0 taken 75%
+branch  1 taken 25% (fallthrough)
+       12:  174:		holder = state->deckCount[j];
+       12:  175:		handPCount[j] = state->handCount[j];
+       12:  176:		disPCount[j] = state->discardCount[j];
+      131:  177:		for(i = 0; i < holder; i++)
+branch  0 taken 91%
+branch  1 taken 9% (fallthrough)
+        -:  178:		{
+        -:  179:			//FOR TESTING printf("Deck %d card %d\n", j, state->deck[j][i]);
+      119:  180:			deckP[j][deckPpos[j]] = state->deck[j][i];//current Player top card = current card of deck
+      119:  181:			deckPpos[j]++;//increase top of deck
+        -:  182:		}
+        -:  183:	}//End for loop
+        -:  184:
+        -:  185:	//Run Function
+        4:  186:	holder = cardEffect(adventurer, 0,0,0,&G,adventurer_pos, bonus);
+call    0 returned 100%
+        -:  187:	
+        -:  188:	//Checks Number of players remains unchanged
+        4:  189:	if(player_holder == state->numPlayers)
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+        4:  190:		printf("Adventurer(): PASS when test number of players.\n");
+call    0 returned 100%
+        -:  191:	else
+    #####:  192:		printf("Adventurer(): FAIL when test number of players.\n");
+call    0 never executed
+        -:  193:	
+        -:  194:	//Test if both treasures are in hand
+        4:  195:	int tester = 0;
+       20:  196:	for(i = 0; i < state->handCount[0]; i++)
+branch  0 taken 95%
+branch  1 taken 5% (fallthrough)
+        -:  197:	{
+       19:  198:		if(state->hand[0][i] == type1)
+branch  0 taken 16% (fallthrough)
+branch  1 taken 84%
+        -:  199:		{
+        3:  200:			tester++;
+        -:  201:		}		
+        -:  202:
+       19:  203:		if(state->hand[0][i] == type2)
+branch  0 taken 16% (fallthrough)
+branch  1 taken 84%
+        -:  204:		{
+        3:  205:			tester++;
+        -:  206:		}
+       19:  207:		if(tester == 2)
+branch  0 taken 16% (fallthrough)
+branch  1 taken 84%
+        -:  208:		{
+        3:  209:			printf("Adventurer(): PASS when test both treasures in hand.\n");
+call    0 returned 100%
+        3:  210:			break;
+        -:  211:		}
+       16:  212:		if(i == (state->handCount[0] - 1))
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  213:		{
+    #####:  214:			printf("Adventurer(): FAIL when test treasures missing from hand.\n");
+call    0 never executed
+        -:  215:		}
+        -:  216:	}
+        -:  217:
+        -:  218:
+        -:  219:	//Checks Number of cards in hand
+        -:  220:	//printf("FOR TESTING %d vs %d\n",state->handCount[0], (handPCount[0] + 1));
+        4:  221:	if(state->handCount[0] == (handPCount[0] + 1))
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+    #####:  222:		printf("Adventurer(): PASS when test correct number of cards in hand.\n");
+call    0 never executed
+        -:  223:	else
+        4:  224:		printf("Adventurer(): FAIL when test incorrect number of cards in hand.\n");
+call    0 returned 100%
+        -:  225:
+        -:  226:
+        -:  227:
+        -:  228:
+        -:  229:	//Check Adventurer was discarded
+        9:  230:	for(i=0; i < state->handCount[0]; i++) // Deck was set up to only have one smithy card in hand, test to see that card no longer is inside the hand
+branch  0 taken 89%
+branch  1 taken 11% (fallthrough)
+        -:  231:	{
+        8:  232:		if(state->hand[0][i] == adventurer)
+branch  0 taken 38% (fallthrough)
+branch  1 taken 63%
+        -:  233:		{
+        3:  234:			printf("Adventurer(): FAIL when test Adventurer card was not discarded.\n");
+call    0 returned 100%
+        3:  235:			break;
+        -:  236:		}
+        5:  237:		else if(i == (state->handCount[0] - 1))//check for last pass
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+    #####:  238:			printf("Adventurer(): PASS when test Adventurer card was discarded.\n");
+call    0 never executed
+        -:  239:	}
+        -:  240:
+        4:  241:	tester = -1;
+        -:  242:	//Check that treasures were removed from deck and discard
+       10:  243:	for(i=0; i < state->deckCount[0]; i++)
+branch  0 taken 60%
+branch  1 taken 40% (fallthrough)
+        -:  244:	{
+        6:  245:		tester = 0;
+        6:  246:		if((state->deck[0][i] == type1) || (state->deck[0][i] == type2))
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+branch  2 taken 0% (fallthrough)
+branch  3 taken 100%
+        -:  247:		{
+    #####:  248:			printf("Adventurer(): FAIL when test Treasures still in deck.\n");
+call    0 never executed
+    #####:  249:			break;
+        -:  250:		}
+        6:  251:		else if(i == (state->deckCount[0] - 1))
+branch  0 taken 33% (fallthrough)
+branch  1 taken 67%
+        2:  252:			tester = -1; //So far so good
+        -:  253:	}
+        4:  254:	if(tester == -1)
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+        -:  255:	{
+       53:  256:		for(i=0; i < state->discardCount[0]; i++)
+branch  0 taken 94%
+branch  1 taken 6% (fallthrough)
+        -:  257:		{
+       50:  258:			if((state->discard[0][i] == type1) || (state->discard[0][i] == type2))
+branch  0 taken 98% (fallthrough)
+branch  1 taken 2%
+branch  2 taken 0% (fallthrough)
+branch  3 taken 100%
+        -:  259:			{
+        1:  260:				printf("Adventurer(): FAIL when test Treasures still in discard.\n");
+call    0 returned 100%
+        1:  261:				break;
+        -:  262:			}
+       49:  263:			else if(i == (state->discardCount[0] - 1))
+branch  0 taken 6% (fallthrough)
+branch  1 taken 94%
+        3:  264:				printf("Adventurer(): PASS when test Treasures no longer in discard or deck.\n");
+call    0 returned 100%
+        -:  265:		}
+        -:  266:	
+        -:  267:	}
+        -:  268:
+        -:  269:	//Test correct amount of card in deck and discard after function
+        -:  270:	//Should be -2 for treasures, +1 for advneturer card = -1 total
+        -:  271:	//printf("FOR TESTING %d vs %d\n",(state->deckCount[0] + state->discardCount[0]), (deckPpos[0] + disPCount[0] - 1));
+        4:  272:	if((state->deckCount[0] + state->discardCount[0]) == (deckPpos[0] + disPCount[0] - 1))
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+    #####:  273:		printf("Adventurer(): PASS when test discard + deck count.\n");
+call    0 never executed
+        -:  274:	else
+        4:  275:		printf("Adventurer(): FAIL when test discard + deck count is off.\n");
+call    0 returned 100%
+        -:  276:
+        -:  277:
+        -:  278:
+        -:  279:	//Test state of other players
+        -:  280:	//Test Hand Count remains unchanged
+       12:  281:	for(i=1; i < num_players; i++)
+branch  0 taken 67%
+branch  1 taken 33% (fallthrough)
+        -:  282:	{
+        8:  283:		if(handPCount[i] != state->handCount[i])
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  284:		{
+    #####:  285:			printf("Adventurer(): FAIL when test hand Count changed for a different player.\n");
+call    0 never executed
+    #####:  286:			break;
+        -:  287:		}
+        8:  288:		if(i == (num_players - 1)) //Last Pass
+branch  0 taken 50% (fallthrough)
+branch  1 taken 50%
+        4:  289:			printf("Adventurer(): PASS when test hand Count didn't change for all other players.\n");
+call    0 returned 100%
+        -:  290:			
+        -:  291:			
+        -:  292:	}
+        -:  293:
+        -:  294:	//Test Discard Count remains unchanged for other players
+       12:  295:	for(i=1; i < num_players; i++)
+branch  0 taken 67%
+branch  1 taken 33% (fallthrough)
+        -:  296:	{
+        8:  297:		if(disPCount[i] != state->discardCount[i])
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  298:		{
+    #####:  299:			printf("Advneturer(): FAIL when test discard Count changed for a different player.\n");
+call    0 never executed
+    #####:  300:			break;
+        -:  301:		}
+        8:  302:		if(i == (num_players - 1)) //Last Pass
+branch  0 taken 50% (fallthrough)
+branch  1 taken 50%
+        4:  303:			printf("Adventurer(): PASS when test discard Count didn't change for all other players.\n");
+call    0 returned 100%
+        -:  304:			
+        -:  305:			
+        -:  306:	}
+        -:  307:
+        -:  308:	//Test State of other player decks
+       10:  309:	for(i=1; i < num_players; i++)
+branch  0 taken 70%
+branch  1 taken 30% (fallthrough)
+        -:  310:	{		
+        7:  311:		player_holder = cmpDeck(deckP[i], state->deck[i], deckPpos[i], state->deckCount[i]);
+call    0 returned 100%
+        7:  312:			if(player_holder == -1)	
+branch  0 taken 14% (fallthrough)
+branch  1 taken 86%
+        -:  313:			{
+        1:  314:				printf("Adventurer(): FAIL when testing deck Count changed for a different player\n");
+call    0 returned 100%
+        1:  315:				break;
+        -:  316:			}
+        6:  317:			if(player_holder == 0)	
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  318:			{
+    #####:  319:				printf("Adventurer(): FAIL when testing deck contents changed for a different player.\n");
+call    0 never executed
+    #####:  320:				break;
+        -:  321:			}
+        6:  322:			if(player_holder == 1)	
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  323:			{
+    #####:  324:				printf("Adventurer(): FAIL when testing deck order changed for a different player.\n");
+call    0 never executed
+    #####:  325:				break;
+        -:  326:			}
+        6:  327:			if((player_holder == 2) && (i == (num_players - 1)))
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+branch  2 taken 50% (fallthrough)
+branch  3 taken 50%
+        3:  328:				printf("Adventurer(): PASS when testing decks were not altered for all other players.\n");
+call    0 returned 100%
+        -:  329:	}
+        -:  330:			
+        4:  331:}
+        -:  332:
+function main called 1 returned 100% blocks executed 100%
+        1:  333:int main(int argc, char *argv[])
+        -:  334:{
+        -:  335:	//void testadventurer(int num_players, int hand_size_in, int adventurer_pos, int deck_size_in, int discard_size_in, int loc1, int loc2, int type1, int type2, int pos1, int pos2)
+        -:  336:
+        1:  337:    testadventurer(3, 5, 0, 15, 10, 0, 1, copper, copper, 0, 9);//Functionality with 2 copper, one in each pile, bookend location
+call    0 returned 100%
+        1:  338:    testadventurer(2, 5, 2, 2, 10, 0, 0, silver, silver, 0, 1);//Functionality with 2 silver, both in deck, make up entire deck
+call    0 returned 100%
+        1:  339:    testadventurer(4, 5, 3, 15, 2, 1, 1, copper, silver, 1, 0);//Functionality with 1 copper 1 silver, both in discard, make up entire pile
+call    0 returned 100%
+        1:  340:    testadventurer(3, 2, 0, 6, 6, 0, 1, gold, gold, 3, 3);//Functionality with 2 gold, one in each pile, center of pile
+call    0 returned 100%
+        -:  341:
+        -:  342:
+        1:  343:    return 0;
+        -:  344:}
+        -:  345:
+        -:  346:
+        -:  347:
