@@ -1,5 +1,3 @@
-GNU nano 2.3.1                          File: unittest2.c
-
 #include "dominion.h"
 #include <stdio.h>
 #include <assert.h>
@@ -17,40 +15,18 @@ GNU nano 2.3.1                          File: unittest2.c
 #define CYN  "\x1B[36m"
 #define WHT  "\x1B[37m"
 /////////////////////////////////////////////////
+// Test for function whoseTurn() 
 
+int main()
+{
+        struct gameState Game;
+        int k[10] = {adventurer, gardens, embargo, village, minion, mine, cutpurse, sea_hag, tribute, smithy};
 
-// test for the function buyCard()
-
-
-int main() {
-      
-      struct gameState Game;
-      struct gameState * t = &Game;
-      
-      int test = 0;
-      Game.coins = 2;
-      Game.numBuys = 2;
-      test = buyCard(2, t);
-      printf(YEL"=========================================\n");
-      if(test != -1)
-          printf(RED "Unit Test 3 FAIL \n" RESET" Function:" BLU " buyCard() does not let us buy a card with 2 coins!\n" RESET);
-      else
-          printf(GRN "Unit Test 3 PASS \n" RESET" Function:" BLU " buyCard() does not let us buy a card with 2 coins!\n" RESET);
-      
-      Game.coins = 12;
-      test = buyCard(2, t);
-      if (test == 0)
-          printf(GRN "Unit Test 3 PASS \n" RESET" Function:" BLU " buyCard() does not allow us to by cards!\n" RESET);
-      else
-          printf(RED "Unit Test 3 FAIL \n" RESET" Function:" BLU " buyCard() allow us to by cards!\n" RESET);
-      
-      Game.coins = 6;
-      test = buyCard(2, t);
-      if(test == -1)
-          printf(GRN "Unit Test 3 PASS \n" RESET" Function:" BLU " buyCard() does not record buys!\n" RESET);
-      else
-          printf(RED "Unit Test 3 FAIL \n" RESET" Function:" BLU " buyCard() records buys!\n" RESET);
-          
-      printf(YEL"=========================================\n");
-
+        initializeGame(2, k, 1, &Game);
+	
+	printf(YEL"=========================================\n");
+        if (whoseTurn(&Game) != 0) printf(RED "Unit Test 1 FAIL \n " RESET "Function:" BLU " whoseTurn()" RESET " has an error within it cause a failure in turn transitions.\n", RED);
+        else printf(GRN "Unit Test 1 PASS \n" RESET " Function:" BLU " whoseTurn()" RESET " works!\n");
+        printf(YEL"=========================================\n");
 }
+

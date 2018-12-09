@@ -1,0 +1,34 @@
+        -:    0:Source:unittest1.c
+        -:    0:Programs:1
+        -:    1:#include "dominion.h"
+        -:    2:#include <stdio.h>
+        -:    3:#include <assert.h>
+        -:    4:
+        -:    5:
+        -:    6:
+        -:    7:///////////////////////////////////////////////////
+        -:    8://Fancy Color code stuff
+        -:    9:#define RESET  "\x1B[0m"
+        -:   10:#define RED  "\x1B[31m"
+        -:   11:#define GRN  "\x1B[32m"
+        -:   12:#define YEL  "\x1B[33m"
+        -:   13:#define BLU  "\x1B[34m"
+        -:   14:#define MAG  "\x1B[35m"
+        -:   15:#define CYN  "\x1B[36m"
+        -:   16:#define WHT  "\x1B[37m"
+        -:   17://///////////////////////////////////////////////
+        -:   18:// Test for function whoseTurn() 
+        -:   19:
+        1:   20:int main()
+        -:   21:{
+        -:   22:        struct gameState Game;
+        1:   23:        int k[10] = {adventurer, gardens, embargo, village, minion, mine, cutpurse, sea_hag, tribute, smithy};
+        -:   24:
+        1:   25:        initializeGame(2, k, 1, &Game);
+        -:   26:	
+        1:   27:	printf(YEL"=========================================\n");
+        1:   28:        if (whoseTurn(&Game) != 0) printf(RED "Unit Test 1 FAIL \n " RESET "Function:" BLU " whoseTurn()" RESET " has an error within it cause a failure in turn transitions.\n", RED);
+        1:   29:        else printf(GRN "Unit Test 1 PASS \n" RESET " Function:" BLU " whoseTurn()" RESET " works!\n");
+        1:   30:        printf(YEL"=========================================\n");
+        -:   31:}
+        -:   32:
